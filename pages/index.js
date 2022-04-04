@@ -5,7 +5,17 @@ import Card from "../components/Card";
 
 import styles from "../styles/Home.module.css";
 
-export default function Home() {
+import coffeeStoresData from "../data/coffee-stores.json";
+
+export async function getStaticProps(context) {
+  return {
+    props: {
+      coffeeStores: coffeeStoresData,
+    },
+  };
+}
+
+export default function Home(props) {
   const onClickHandler = () => {
     console.log("hi");
   };
@@ -28,7 +38,22 @@ export default function Home() {
           width={300}
           height={300}
         />
-        <Card />
+
+        {props.coffeeStores.length > 0 && (
+          <div>
+            <h2>San Francisco Coffee Stores</h2>
+            {props.coffeeStores.map(({ id, name, imgUrl }) => {
+              return (
+                <Card
+                  key={id}
+                  name={name}
+                  imageUrl={imgUrl}
+                  href={`/coffee-store/${id}`}
+                />
+              );
+            })}
+          </div>
+        )}
       </main>
 
       <footer className={styles.footer}>
