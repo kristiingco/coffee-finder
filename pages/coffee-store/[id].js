@@ -1,3 +1,4 @@
+import { useContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -6,14 +7,19 @@ import { fetchCoffeeStores } from "../../lib/coffee-stores";
 import Head from "next/head";
 import Image from "next/image";
 
+import { StoreContext } from "../../store/store-context";
+
+import { isEmpty } from "../../utils";
+
 export async function getStaticProps(staticProps) {
   const params = staticProps.params;
   const coffeeStores = await fetchCoffeeStores();
+  const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+    return coffeeStore.fsq_id.toString() === params.id;
+  });
   return {
     props: {
-      coffeeStore: coffeeStores.find((coffeeStore) => {
-        return coffeeStore.fsq_id.toString() === params.id;
-      }),
+      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
     },
   };
 }
@@ -32,26 +38,44 @@ export async function getStaticPaths() {
     fallback: true,
   };
 }
-const CoffeeStore = (props) => {
+const CoffeeStore = (initialProps) => {
   const router = useRouter();
+  const id = router.query.id;
+
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+
+  const {
+    state: { coffeeStores },
+  } = useContext(StoreContext);
+
+  useEffect(() => {
+    if (isEmpty(initialProps.coffeeStore)) {
+      if (coffeeStores.length > 0) {
+        const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+          return coffeeStore.fsq_id.toString() === id;
+        });
+        setCoffeeStore(findCoffeeStoreById);
+      }
+    }
+  }, [id, coffeeStores, initialProps.coffeeStore]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
 
-  const { location, name, imgUrl } = props.coffeeStore;
+  const { fsq_id, name, address, neighborhood, imgUrl } = coffeeStore;
 
   return (
     <div>
       <Head>
-        <title>{name}</title>
+        <title>{name ? name : "Coffee Store"}</title>
       </Head>
       <Link href="/">
         <a>Back to home</a>
       </Link>
-      <p>{location.address}</p>
-      <p>{name}</p>
-      {location.neighborhood && <p>{location.neighborhood}</p>}
+      {address && <p>{address}</p>}
+      {name && <p>{name}</p>}
+      {neighborhood && <p>{neighborhood}</p>}
       <p>1</p>
       <Image
         src={
