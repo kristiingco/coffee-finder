@@ -42,28 +42,68 @@ const CoffeeStore = (initialProps) => {
   const router = useRouter();
   const id = router.query.id;
 
-  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  const [coffeeStore, setCoffeeStore] = useState(
+    initialProps.coffeeStore || {}
+  );
 
   const {
     state: { coffeeStores },
   } = useContext(StoreContext);
 
+  const createCoffeeStoreHandler = async (coffeeStore) => {
+    try {
+      const { fsq_id, name, votes, imgUrl, neighborhood, address } =
+        coffeeStore;
+      const response = await fetch("/api/create-coffee-store", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fsq_id: fsq_id,
+          name,
+          votes: 0,
+          imgUrl,
+          neighborhood: neighborhood[0] || "",
+          address: address || "",
+        }),
+      });
+
+      const dbCoffeeStore = response.json();
+    } catch (err) {
+      console.error("error creating coffee store", err);
+    }
+  };
+
   useEffect(() => {
     if (isEmpty(initialProps.coffeeStore)) {
       if (coffeeStores.length > 0) {
-        const findCoffeeStoreById = coffeeStores.find((coffeeStore) => {
+        const coffeeStoreFromContext = coffeeStores.find((coffeeStore) => {
           return coffeeStore.fsq_id.toString() === id;
         });
-        setCoffeeStore(findCoffeeStoreById);
+
+        if (coffeeStoreFromContext) {
+          setCoffeeStore(coffeeStoreFromContext);
+          createCoffeeStoreHandler(coffeeStoreFromContext);
+        }
       }
+    } else {
+      createCoffeeStoreHandler(initialProps.coffeeStore);
     }
-  }, [id, coffeeStores, initialProps.coffeeStore]);
+  }, [id, initialProps, initialProps.coffeeStore]);
+
+  const [voteCount, setVoteCount] = useState(0);
+
+  const upvoteHandler = () => {
+    let count = voteCount + 1;
+    setVoteCount(count);
+  };
+
+  const { fsq_id, votes, name, address, neighborhood, imgUrl } = coffeeStore;
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
-
-  const { fsq_id, name, address, neighborhood, imgUrl } = coffeeStore;
 
   return (
     <div>
@@ -76,7 +116,8 @@ const CoffeeStore = (initialProps) => {
       {address && <p>{address}</p>}
       {name && <p>{name}</p>}
       {neighborhood && <p>{neighborhood}</p>}
-      <p>1</p>
+      <p>{voteCount}</p>
+      <button onClick={upvoteHandler}>Upvote</button>
       <Image
         src={
           imgUrl ||
