@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useSWR from "swr";
 import Link from "next/link";
 
 import { fetchCoffeeStores } from "../../lib/coffee-stores";
@@ -9,7 +10,7 @@ import Image from "next/image";
 
 import { StoreContext } from "../../store/store-context";
 
-import { isEmpty } from "../../utils";
+import { isEmpty, fetcher } from "../../utils";
 
 export async function getStaticProps(staticProps) {
   const params = staticProps.params;
@@ -94,10 +95,42 @@ const CoffeeStore = (initialProps) => {
 
   const [voteCount, setVoteCount] = useState(0);
 
-  const upvoteHandler = () => {
-    let count = voteCount + 1;
-    setVoteCount(count);
+  const { data, error } = useSWR(
+    `/api/get-coffee-store-by-id?id=${id}`,
+    fetcher
+  );
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setCoffeeStore(data[0]);
+
+      setVoteCount(data[0].votes);
+    }
+  }, [data]);
+
+  const upvoteHandler = async () => {
+    try {
+      const response = await fetch("/api/upvote-coffee-store-by-id", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fsq_id: id,
+        }),
+      });
+
+      const dbCoffeeStore = response.json();
+      let count = voteCount + 1;
+      setVoteCount(count);
+    } catch (err) {
+      console.error("error upvoting coffee store", err);
+    }
   };
+
+  if (error) {
+    return <div>Something went wrong</div>;
+  }
 
   const { fsq_id, votes, name, address, neighborhood, imgUrl } = coffeeStore;
 
