@@ -8,8 +8,6 @@ import Card from "../components/Card";
 import { fetchCoffeeStores } from "../lib/coffee-stores";
 import { ACTION_TYPES, StoreContext } from "../store/store-context";
 
-import styles from "../styles/Home.module.css";
-
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores();
 
@@ -58,14 +56,15 @@ export default function Home(props) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="font-Poppins">
       <Head>
         <title>Coffee Finder</title>
         <meta name="description" content="Find nearest coffee shops" />
         <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main className={styles.main}>
+      <main>
         <Banner
           buttonText={isFindingLocation ? "Locating..." : "View stores nearby"}
           onClickHandler={onClickHandler}
@@ -76,63 +75,48 @@ export default function Home(props) {
         {coffeeStoresError && (
           <div> Something went wrong: {coffeeStoresError}</div>
         )}
-        <Image
-          src="/static/hot_beverage.svg"
-          alt="hero image"
-          width={300}
-          height={300}
-        />
         {coffeeStores.length > 0 && (
           <div>
-            <h2>Coffee Stores Near You</h2>
-            {coffeeStores.map(({ fsq_id, name, imgUrl }) => {
-              return (
-                <Card
-                  key={fsq_id}
-                  name={name}
-                  imageUrl={
-                    imgUrl ||
-                    "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-                  }
-                  href={`/coffee-store/${fsq_id}`}
-                />
-              );
-            })}
+            <h2 className="text-xl text-center">Coffee Stores Near You</h2>
+            <div className="grid place-content-center  min-w-0 min-h-0 md:grid-cols-3 ">
+              {coffeeStores.map(({ fsq_id, name, imgUrl }) => {
+                return (
+                  <Card
+                    key={fsq_id}
+                    name={name}
+                    imageUrl={
+                      imgUrl ||
+                      "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                    }
+                    href={`/coffee-store/${fsq_id}`}
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
 
         {props.coffeeStores.length > 0 && (
           <div>
-            <h2>San Francisco Coffee Stores</h2>
-            {props.coffeeStores.map(({ fsq_id, name, imgUrl }) => {
-              return (
-                <Card
-                  key={fsq_id}
-                  name={name}
-                  imageUrl={
-                    imgUrl ||
-                    "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-                  }
-                  href={`/coffee-store/${fsq_id}`}
-                />
-              );
-            })}
+            <h2 className="text-xl text-center">San Francisco Coffee Stores</h2>
+            <div className="grid place-content-center md:grid-cols-3 md:grid-rows-3">
+              {props.coffeeStores.map(({ fsq_id, name, imgUrl }) => {
+                return (
+                  <Card
+                    key={fsq_id}
+                    name={name}
+                    imageUrl={
+                      imgUrl ||
+                      "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                    }
+                    href={`/coffee-store/${fsq_id}`}
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import Head from "next/head";
 import Image from "next/image";
 
 import { StoreContext } from "../../store/store-context";
+import { ThumbUpIcon, ArrowLeftIcon } from "@heroicons/react/solid";
 
 import { isEmpty, fetcher } from "../../utils";
 
@@ -139,27 +140,49 @@ const CoffeeStore = (initialProps) => {
   }
 
   return (
-    <div>
+    <div className="m-5">
       <Head>
         <title>{name ? name : "Coffee Store"}</title>
       </Head>
+
       <Link href="/">
-        <a>Back to home</a>
+        <a className="flex items-center gap-2 h-2 m-3 text-sm">
+          <ArrowLeftIcon className="h-5 w-5" />
+          Back to home
+        </a>
       </Link>
-      {address && <p>{address}</p>}
-      {name && <p>{name}</p>}
-      {neighborhood && <p>{neighborhood}</p>}
-      <p>{voteCount}</p>
-      <button onClick={upvoteHandler}>Upvote</button>
-      <Image
-        src={
-          imgUrl ||
-          "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
-        }
-        width={600}
-        height={360}
-        alt={name}
-      />
+      <div className="flex flex-col p-3 m-5 border md:flex-row md:w-3/4 mx-auto">
+        <Image
+          src={
+            imgUrl ||
+            "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+          }
+          width={600}
+          height={360}
+          alt={name}
+        />
+        <div className="flex flex-col md:w-1/2 md:p-5 md:justify-between">
+          <div className="flex flex-col">
+            {name && (
+              <h1 className="font-semibold text-xl md:text-3xl">{name}</h1>
+            )}
+            {address && <p className="md:text-lg">{address}</p>}
+            {neighborhood && <p className="md:text-lg">{neighborhood}</p>}
+          </div>
+          <div className="mt-8 h-auto flex justify-end">
+            <p className="mr-4 text-lg text-cool-purple font-semibold">
+              {voteCount}
+            </p>
+            <button
+              className="bg-cool-purple text-white px-4 py-1 rounded-lg flex gap-2 items-center"
+              onClick={upvoteHandler}
+            >
+              <ThumbUpIcon className="h-5 w-5" />
+              Upvote
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
