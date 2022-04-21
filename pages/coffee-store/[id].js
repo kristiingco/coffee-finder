@@ -54,8 +54,7 @@ const CoffeeStore = (initialProps) => {
 
   const createCoffeeStoreHandler = async (coffeeStore) => {
     try {
-      const { fsq_id, name, votes, imgUrl, neighborhood, address } =
-        coffeeStore;
+      const { fsq_id, name, imgUrl, neighborhood, address } = coffeeStore;
       const response = await fetch("/api/create-coffee-store", {
         method: "POST",
         headers: {
@@ -92,7 +91,7 @@ const CoffeeStore = (initialProps) => {
     } else {
       createCoffeeStoreHandler(initialProps.coffeeStore);
     }
-  }, [id, initialProps, initialProps.coffeeStore]);
+  }, [id, initialProps, initialProps.coffeeStor, coffeeStores]);
 
   const [voteCount, setVoteCount] = useState(0);
 
@@ -133,7 +132,7 @@ const CoffeeStore = (initialProps) => {
     return <div>Something went wrong</div>;
   }
 
-  const { fsq_id, votes, name, address, neighborhood, imgUrl } = coffeeStore;
+  const { name, address, neighborhood, imgUrl } = coffeeStore;
 
   if (router.isFallback) {
     return <div>Loading...</div>;

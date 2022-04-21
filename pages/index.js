@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useTrackLocation } from "../hooks/use-track-location";
 import Head from "next/head";
-import Image from "next/image";
 import Banner from "../components/Banner";
 import Card from "../components/Card";
 
@@ -48,7 +47,7 @@ export default function Home(props) {
     }
 
     getMoreCoffeeStores();
-  }, [latLong]);
+  }, [latLong, dispatch]);
 
   const onClickHandler = () => {
     trackLocationHandler();
