@@ -97,7 +97,7 @@ export default function Home(props) {
 
         {props.coffeeStores.length > 0 && (
           <div>
-            <h2 className="text-xl text-center">San Francisco Coffee Stores</h2>
+            <h2 className="text-xl text-center">Featured Coffee Stores</h2>
             <div className="grid place-content-center md:grid-cols-3 md:grid-rows-3">
               {props.coffeeStores.map(({ fsq_id, name, imgUrl }) => {
                 return (
